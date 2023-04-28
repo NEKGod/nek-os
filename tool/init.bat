@@ -5,12 +5,18 @@ set BXSHARE=H:\usr\Bochs-2.7
 set rootPath=H:\pojo\systeam-code\mySystem
 set hdPath=%rootPath%/hd/main.hd
 set mbrBinPath=%rootPath%/build/mbr.bin
+set loaderBinPath=%rootPath%/build/loader.bin
 
 mkdir "%rootPath%/hd"
+mkdir "%rootPath%/build"
 ::¥¥Ω®–Èƒ‚”≤≈Ãmain.hd\n
 if not exist "%hdPath%" bximage  -func="create" -hd="60M" -imgmode="flat" -q "%hdPath%"
 ::±‡“ÎMBR≥Ã–Ú
-nasm -o "%mbrBinPath%" "%rootPath%/mbr.S"
+nasm -o "%mbrBinPath%" -I "%rootPath%/boot/include" "%rootPath%/boot/mbr.S"
+::±‡“ÎLOADER≥Ã–Ú
+nasm -o "%loaderBinPath%" -I "%rootPath%/boot/include" "%rootPath%/boot/loader.S"
 ::–¥»ÎMBR≥Ã–Ú
-dd if="%mbrBinPath%" of="%hdPath%" bs=512 count=1 conv=notrunc
+dd if="%mbrBinPath%" of="%hdPath%" bs=512 count=1 seek=0 conv=notrunc
+::–¥»ÎLOADER≥Ã–Ú
+dd if="%loaderBinPath%" of="%hdPath%" bs=512 count=1 seek=2 conv=notrunc
 bochs -f .\config\bochs.disk
